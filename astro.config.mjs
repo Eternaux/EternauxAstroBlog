@@ -3,6 +3,6 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://eternaux.github.io',
-  base: '/EternauxAstroBlog/'
+  site: 'https://www.eternaux.com',
+  base: '/'
 });
