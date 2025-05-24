@@ -1,0 +1,27 @@
+---
+// Props: title (string)
+const { title } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title ? `${title} | My Blog` : 'My Blog'}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; background: #f9f9f9; color: #222; }
+      header { background: #222; color: #fff; padding: 1.5rem 2rem; }
+      main { max-width: 700px; margin: 2rem auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px #0001; }
+      a { color: #0070f3; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">My Blog</a></h1>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html> 
