@@ -1,29 +1,16 @@
 ---
 import BlogLayout from '../../layouts/BlogLayout.astro';
-import fs from 'fs';
-import path from 'path';
 
 // Get all markdown files in the blog directory
-const postsDir = path.resolve(Astro.src, 'pages/blog');
-const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md'));
-
-const posts = await Promise.all(
-  files.map(async (file) => {
-    const { frontmatter } = await Astro.glob(`./${file}`)[0];
-    return {
-      ...frontmatter,
-      url: `/blog/${file.replace(/\\.md$/, '')}`,
-    };
-  })
-);
+const posts = await Astro.glob('./*.md');
 ---
 <BlogLayout title="Blog">
   <h2>Blog Posts</h2>
   <ul>
     {posts.map(post => (
       <li>
-        <a href={post.url}><strong>{post.title}</strong></a><br />
-        <small>{post.date} &mdash; {post.description}</small>
+        <a href={post.url}><strong>{post.frontmatter.title}</strong></a><br />
+        <small>{post.frontmatter.date} &mdash; {post.frontmatter.description}</small>
       </li>
     ))}
   </ul>
