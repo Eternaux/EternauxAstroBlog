@@ -7,9 +7,12 @@ export default defineConfig({
   site: 'https://www.eternaux.com',
   base: '/',
   integrations: [react()],
+  output: 'static',
+  trailingSlash: 'never',
   build: {
     format: 'file'
   },
-  output: 'static',
-  trailingSlash: 'never'
+  experimental: {
+    clientPrerender: true
+  }
 });

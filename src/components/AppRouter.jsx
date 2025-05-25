@@ -19,11 +19,17 @@ function Home({ navigate: customNavigate }) {
   useEffect(() => {
     // 检查URL参数是否包含重定向路径
     const params = new URLSearchParams(location.search);
-    const redirectPath = params.get('path');
+    const redirectPath = params.get('spa_path');
     
-    if (redirectPath) {
+    // 检查sessionStorage中是否有保存的路径
+    const storedPath = sessionStorage.getItem('spa_path');
+    
+    if (redirectPath || storedPath) {
+      const targetPath = redirectPath || storedPath;
+      // 清除sessionStorage，避免循环
+      sessionStorage.removeItem('spa_path');
       // 清除URL参数并导航到正确路径
-      navigate(redirectPath, { replace: true });
+      navigate(decodeURIComponent(targetPath), { replace: true });
     }
   }, [location, navigate]);
   
@@ -79,8 +85,30 @@ function BlogPage({ customNavigate }) {
 function AppContent() {
   // 简化后的过渡效果
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 处理从404页面重定向
+  useEffect(() => {
+    // 检查URL参数
+    const searchParams = new URLSearchParams(location.search);
+    const redirectPath = searchParams.get('spa_path');
+    
+    // 检查sessionStorage (从404.html设置的)
+    const storedPath = sessionStorage.getItem('spa_path');
+    
+    // 如果有重定向路径
+    if (redirectPath || storedPath) {
+      const targetPath = redirectPath || storedPath;
+      // 清除会话存储，避免循环
+      sessionStorage.removeItem('spa_path');
+      // 导航到正确路径
+      navigate(decodeURIComponent(targetPath), { replace: true });
+    }
+    
+    setIsInitialized(true);
+  }, [navigate, location.search]);
 
   // 自定义导航函数以实现过渡效果
   const customNavigate = useCallback((to) => {
@@ -119,6 +147,36 @@ function AppContent() {
     }, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // 初始化时不显示内容，避免闪烁
+  if (!isInitialized) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-spinner"></div>
+        <style>{`
+          .loading-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            flex-direction: column;
+          }
+          .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <div className={`page-container ${isTransitioning ? 'fade-out' : 'fade-in'}`}>
