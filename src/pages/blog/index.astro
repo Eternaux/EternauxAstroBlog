@@ -5,12 +5,31 @@ import BlogLayout from '../../layouts/BlogLayout.astro';
 const posts = await Astro.glob('./*.md');
 ---
 <BlogLayout title="Blog">
-  <h2>Blog Posts</h2>
-  <ul>
+  <ul class="post-list">
     {posts.map(post => (
-      <li>
-        <a href={post.url}><strong>{post.frontmatter.title}</strong></a><br />
-        <small>{post.frontmatter.date} &mdash; {post.frontmatter.description}</small>
+      <li class="post-item">
+        <a href={post.url}>
+          <h2>{post.frontmatter.title}</h2>
+        </a>
+        <p>{post.frontmatter.description}</p>
+        <div class="post-meta">
+          {post.frontmatter.date && (
+            <time datetime={post.frontmatter.date}>
+              {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </time>
+          )}
+        </div>
+        {post.frontmatter.tags && (
+          <div class="post-tags">
+            {post.frontmatter.tags.map((tag: string) => (
+              <span class="post-tag">{tag}</span>
+            ))}
+          </div>
+        )}
       </li>
     ))}
   </ul>
