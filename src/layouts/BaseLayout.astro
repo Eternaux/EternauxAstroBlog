@@ -70,10 +70,10 @@ const { title } = Astro.props;
       </nav>
     </header>
     <main>
-      <div id="app-root"></div>
+      <slot />
     </main>
     <footer>
       <p>© {new Date().getFullYear()} Eternaux</p>
     </footer>
   </body>
-</html> 
+</html>

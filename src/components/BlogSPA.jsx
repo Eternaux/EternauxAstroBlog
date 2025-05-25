@@ -48,7 +48,13 @@ export default function BlogSPA({ selected, onSelect, onBack }) {
         <div className="posts-grid">
           {posts.map(post => (
             <div className="post-card" key={post.slug} onClick={() => onSelect(post.slug)} style={{ cursor: 'pointer' }}>
-              <img src={post.cover} alt={post.title} />
+              <div className="post-image-placeholder" style={{ 
+                background: post.slug === 'demo-1' ? '#10a37f' : 
+                             post.slug === 'demo-2' ? '#4a6bdf' : 
+                             post.slug === 'demo-3' ? '#ff5252' : '#7e57c2' 
+              }}>
+                <span>{post.title.split(' ')[0]}</span>
+              </div>
               <h3>{post.title}</h3>
               <p>{post.description}</p>
             </div>
@@ -95,6 +101,16 @@ export default function BlogSPA({ selected, onSelect, onBack }) {
           color: #666;
           font-size: 1rem;
         }
+        .post-image-placeholder {
+          width: 100%;
+          aspect-ratio: 16/9;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 24px;
+          font-weight: bold;
+        }
         .post-detail {
           max-width: 800px;
           margin: 0 auto;
@@ -111,4 +127,4 @@ export default function BlogSPA({ selected, onSelect, onBack }) {
       `}</style>
     </div>
   );
-} 
+}

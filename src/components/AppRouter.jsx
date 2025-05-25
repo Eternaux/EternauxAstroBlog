@@ -7,6 +7,7 @@ import {
   useNavigate,
   useParams
 } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import BlogSPA from './BlogSPA.jsx';
 
 // 首页组件
@@ -44,8 +45,8 @@ function BlogPage() {
 // 动画包裹
 function FadeTransition({ children }) {
   const location = useLocation();
-  const [fade, setFade] = React.useState(false);
-  React.useEffect(() => {
+  const [fade, setFade] = useState(false);
+  useEffect(() => {
     setFade(true);
     const t = setTimeout(() => setFade(false), 200);
     return () => clearTimeout(t);
@@ -74,4 +75,4 @@ export default function AppRouter() {
       </FadeTransition>
     </Router>
   );
-} 
+}
