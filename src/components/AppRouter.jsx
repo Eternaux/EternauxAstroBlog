@@ -45,19 +45,36 @@ function BlogPage() {
 // 动画包裹
 function FadeTransition({ children }) {
   const location = useLocation();
-  const [fade, setFade] = useState(false);
+  const [displayLocation, setDisplayLocation] = useState(location);
+  const [transitionStage, setTransitionStage] = useState("fadeIn");
+  
   useEffect(() => {
-    setFade(true);
-    const t = setTimeout(() => setFade(false), 200);
-    return () => clearTimeout(t);
-  }, [location.pathname]);
+    if (location !== displayLocation) {
+      setTransitionStage("fadeOut");
+      
+      // Wait until animation completes before updating the location
+      const timeout = setTimeout(() => {
+        setDisplayLocation(location);
+        setTransitionStage("fadeIn");
+      }, 300); // Match this to your CSS transition time
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [location, displayLocation]);
+  
   return (
-    <div className={fade ? 'fade fade-out' : 'fade fade-in'} style={{ minHeight: '60vh' }}>
+    <div className={`fade ${transitionStage}`} style={{ minHeight: '60vh' }}>
       {children}
       <style>{`
-        .fade { transition: opacity 0.3s; }
-        .fade-in { opacity: 1; }
-        .fade-out { opacity: 0; }
+        .fade {
+          transition: opacity 0.3s ease-in-out;
+        }
+        .fadeIn {
+          opacity: 1;
+        }
+        .fadeOut {
+          opacity: 0;
+        }
       `}</style>
     </div>
   );
