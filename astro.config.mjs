@@ -6,5 +6,10 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://www.eternaux.com',
   base: '/',
-  integrations: [react()]
+  integrations: [react()],
+  build: {
+    format: 'file'
+  },
+  output: 'static',
+  trailingSlash: 'never'
 });

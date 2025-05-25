@@ -7,12 +7,26 @@ import {
   useNavigate,
   useParams
 } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import BlogSPA from './BlogSPA.jsx';
 
 // 首页组件
 function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 处理来自404页面的重定向
+  useEffect(() => {
+    // 检查URL参数是否包含重定向路径
+    const params = new URLSearchParams(location.search);
+    const redirectPath = params.get('path');
+    
+    if (redirectPath) {
+      // 清除URL参数并导航到正确路径
+      navigate(redirectPath, { replace: true });
+    }
+  }, [location, navigate]);
+  
   return (
     <div style={{ padding: '2em 0' }}>
       <h2>欢迎来到 Eternaux 博客</h2>
@@ -42,37 +56,67 @@ function BlogPage() {
   );
 }
 
-// 动画包裹
-function FadeTransition({ children }) {
+function AppContent() {
+  // 简化后的过渡效果
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const navigate = useNavigate();
   const location = useLocation();
-  const [displayLocation, setDisplayLocation] = useState(location);
-  const [transitionStage, setTransitionStage] = useState("fadeIn");
-  
+
+  // 自定义导航函数以实现过渡效果
+  const customNavigate = useCallback((to) => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      navigate(to);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 300);
+  }, [navigate]);
+
+  // 拦截所有链接点击
   useEffect(() => {
-    if (location !== displayLocation) {
-      setTransitionStage("fadeOut");
-      
-      // Wait until animation completes before updating the location
-      const timeout = setTimeout(() => {
-        setDisplayLocation(location);
-        setTransitionStage("fadeIn");
-      }, 300); // Match this to your CSS transition time
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [location, displayLocation]);
-  
+    const handleClick = (event) => {
+      // 仅处理链接点击
+      const link = event.target.closest('a');
+      if (link && link.href.startsWith(window.location.origin)) {
+        event.preventDefault();
+        const path = link.href.replace(window.location.origin, '');
+        if (path !== location.pathname) {
+          customNavigate(path);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [customNavigate, location]);
+
+  // 优化：页面加载时的过渡效果
+  useEffect(() => {
+    // 短暂延迟后显示内容，确保CSS已加载
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className={`fade ${transitionStage}`} style={{ minHeight: '60vh' }}>
-      {children}
+    <div className={`page-container ${isTransitioning ? 'fade-out' : 'fade-in'}`}>
+      <Routes>
+        <Route path="/" element={<Home navigate={customNavigate} />} />
+        <Route path="/blog" element={<BlogPage customNavigate={customNavigate} />} />
+        <Route path="/blog/:slug" element={<BlogPage customNavigate={customNavigate} />} />
+        <Route path="*" element={<Home navigate={customNavigate} />} />
+      </Routes>
       <style>{`
-        .fade {
+        .page-container {
+          min-height: 60vh;
           transition: opacity 0.3s ease-in-out;
         }
-        .fadeIn {
+        .fade-in {
           opacity: 1;
         }
-        .fadeOut {
+        .fade-out {
           opacity: 0;
         }
       `}</style>
@@ -83,13 +127,7 @@ function FadeTransition({ children }) {
 export default function AppRouter() {
   return (
     <Router>
-      <FadeTransition>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogPage />} />
-        </Routes>
-      </FadeTransition>
+      <AppContent />
     </Router>
   );
 }
