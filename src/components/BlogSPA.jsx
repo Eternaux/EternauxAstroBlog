@@ -42,12 +42,45 @@ function markdownToHtml(md) {
 }
 
 export default function BlogSPA({ selected, onSelect, onBack }) {
+  // 用于处理点击事件，添加过渡动画
+  const handleCardClick = (slug) => {
+    if (typeof onSelect === 'function') {
+      // 添加额外的动画类，并在短暂延迟后调用导航函数
+      document.querySelector('.page-container').classList.add('manual-fade-out');
+      setTimeout(() => {
+        onSelect(slug);
+        setTimeout(() => {
+          const container = document.querySelector('.page-container');
+          if (container) {
+            container.classList.remove('manual-fade-out');
+          }
+        }, 50);
+      }, 300);
+    }
+  };
+
+  // 返回按钮的动画处理
+  const handleBackClick = () => {
+    if (typeof onBack === 'function') {
+      document.querySelector('.page-container').classList.add('manual-fade-out');
+      setTimeout(() => {
+        onBack();
+        setTimeout(() => {
+          const container = document.querySelector('.page-container');
+          if (container) {
+            container.classList.remove('manual-fade-out');
+          }
+        }, 50);
+      }, 300);
+    }
+  };
+  
   return (
     <div style={{ minHeight: '60vh', position: 'relative' }}>
       {!selected ? (
         <div className="posts-grid">
           {posts.map(post => (
-            <div className="post-card" key={post.slug} onClick={() => onSelect(post.slug)} style={{ cursor: 'pointer' }}>
+            <div className="post-card" key={post.slug} onClick={() => handleCardClick(post.slug)} style={{ cursor: 'pointer' }}>
               <div className="post-image-placeholder" style={{ 
                 background: post.slug === 'demo-1' ? '#10a37f' : 
                              post.slug === 'demo-2' ? '#4a6bdf' : 
@@ -62,7 +95,7 @@ export default function BlogSPA({ selected, onSelect, onBack }) {
         </div>
       ) : (
         <div className="post-detail">
-          <button onClick={onBack} style={{ marginBottom: '1em' }}>← 返回</button>
+          <button onClick={handleBackClick} style={{ marginBottom: '1em' }}>← 返回</button>
           <div dangerouslySetInnerHTML={{ __html: markdownToHtml(posts.find(p => p.slug === selected).content) }} />
         </div>
       )}

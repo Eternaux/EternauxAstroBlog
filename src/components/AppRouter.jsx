@@ -11,7 +11,7 @@ import { useState, useEffect, useCallback } from 'react';
 import BlogSPA from './BlogSPA.jsx';
 
 // 首页组件
-function Home() {
+function Home({ navigate: customNavigate }) {
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -27,11 +27,19 @@ function Home() {
     }
   }, [location, navigate]);
   
+  const handleClick = () => {
+    if (customNavigate) {
+      customNavigate('/blog');
+    } else {
+      navigate('/blog');
+    }
+  };
+  
   return (
     <div style={{ padding: '2em 0' }}>
       <h2>欢迎来到 Eternaux 博客</h2>
       <p>我会写关于我感兴趣方向的文章</p>
-      <button onClick={() => navigate('/blog')}>进入博客</button>
+      <button onClick={handleClick}>进入博客</button>
     </div>
   );
 }
@@ -44,11 +52,23 @@ function BlogDetail({ slug, onBack }) {
   return <BlogSPA selected={slug} onSelect={() => {}} onBack={onBack} />;
 }
 
-function BlogPage() {
+function BlogPage({ customNavigate }) {
   const navigate = useNavigate();
   const { slug } = useParams();
-  const handleSelect = (slug) => navigate(`/blog/${slug}`);
-  const handleBack = () => navigate('/blog');
+  const handleSelect = (slug) => {
+    if (customNavigate) {
+      customNavigate(`/blog/${slug}`);
+    } else {
+      navigate(`/blog/${slug}`);
+    }
+  };
+  const handleBack = () => {
+    if (customNavigate) {
+      customNavigate('/blog');
+    } else {
+      navigate('/blog');
+    }
+  };
   return slug ? (
     <BlogDetail slug={slug} onBack={handleBack} />
   ) : (
@@ -118,6 +138,9 @@ function AppContent() {
         }
         .fade-out {
           opacity: 0;
+        }
+        .manual-fade-out {
+          opacity: 0 !important;
         }
       `}</style>
     </div>
