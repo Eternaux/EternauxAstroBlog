@@ -4,8 +4,10 @@ import {
   Routes,
   Route,
   useLocation,
-  useNavigate
+  useNavigate,
+  useParams
 } from 'react-router-dom';
+import BlogSPA from './BlogSPA.jsx';
 
 // 首页组件
 function Home() {
@@ -19,8 +21,25 @@ function Home() {
   );
 }
 
-// 博客列表和详情复用 BlogSPA
-import BlogSPA from './BlogSPA.jsx';
+function BlogList({ onSelect }) {
+  return <BlogSPA selected={null} onSelect={onSelect} onBack={() => {}} />;
+}
+
+function BlogDetail({ slug, onBack }) {
+  return <BlogSPA selected={slug} onSelect={() => {}} onBack={onBack} />;
+}
+
+function BlogPage() {
+  const navigate = useNavigate();
+  const { slug } = useParams();
+  const handleSelect = (slug) => navigate(`/blog/${slug}`);
+  const handleBack = () => navigate('/blog');
+  return slug ? (
+    <BlogDetail slug={slug} onBack={handleBack} />
+  ) : (
+    <BlogList onSelect={handleSelect} />
+  );
+}
 
 // 动画包裹
 function FadeTransition({ children }) {
@@ -49,7 +68,8 @@ export default function AppRouter() {
       <FadeTransition>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/blog/*" element={<BlogSPA />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogPage />} />
         </Routes>
       </FadeTransition>
     </Router>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 // 示例文章数据（实际可用 props 传入或 fetch 获取）
 const posts = [
@@ -41,78 +41,26 @@ function markdownToHtml(md) {
     .replace(/\n/g, '<br />');
 }
 
-export default function BlogSPA() {
-  const [selected, setSelected] = useState(null);
-  const [fade, setFade] = useState(false);
-
-  // 监听浏览器返回/前进
-  useEffect(() => {
-    const onPopState = (e) => {
-      if (window.history.state && window.history.state.slug) {
-        setSelected(window.history.state.slug);
-      } else {
-        setSelected(null);
-      }
-    };
-    window.addEventListener('popstate', onPopState);
-    // 初始化：如果有 hash，直接进入详情
-    if (window.location.hash) {
-      const slug = window.location.hash.replace('#', '');
-      if (posts.find(p => p.slug === slug)) {
-        setSelected(slug);
-        window.history.replaceState({ slug }, '', `#${slug}`);
-      }
-    }
-    return () => window.removeEventListener('popstate', onPopState);
-  }, []);
-
-  const handleSelect = (slug) => {
-    setFade(true);
-    setTimeout(() => {
-      setSelected(slug);
-      setFade(false);
-      window.history.pushState({ slug }, '', `#${slug}`);
-    }, 200);
-  };
-
-  const handleBack = () => {
-    setFade(true);
-    setTimeout(() => {
-      window.history.back();
-      setFade(false);
-    }, 200);
-  };
-
+export default function BlogSPA({ selected, onSelect, onBack }) {
   return (
     <div style={{ minHeight: '60vh', position: 'relative' }}>
-      <div className={`fade${fade ? ' fade-out' : ' fade-in'}`}>
-        {!selected ? (
-          <div className="posts-grid">
-            {posts.map(post => (
-              <div className="post-card" key={post.slug} onClick={() => handleSelect(post.slug)} style={{ cursor: 'pointer' }}>
-                <img src={post.cover} alt={post.title} />
-                <h3>{post.title}</h3>
-                <p>{post.description}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="post-detail">
-            <button onClick={handleBack} style={{ marginBottom: '1em' }}>← 返回</button>
-            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(posts.find(p => p.slug === selected).content) }} />
-          </div>
-        )}
-      </div>
+      {!selected ? (
+        <div className="posts-grid">
+          {posts.map(post => (
+            <div className="post-card" key={post.slug} onClick={() => onSelect(post.slug)} style={{ cursor: 'pointer' }}>
+              <img src={post.cover} alt={post.title} />
+              <h3>{post.title}</h3>
+              <p>{post.description}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="post-detail">
+          <button onClick={onBack} style={{ marginBottom: '1em' }}>← 返回</button>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(posts.find(p => p.slug === selected).content) }} />
+        </div>
+      )}
       <style>{`
-        .fade {
-          transition: opacity 0.3s;
-        }
-        .fade-in {
-          opacity: 1;
-        }
-        .fade-out {
-          opacity: 0;
-        }
         .posts-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
