@@ -1,5 +1,5 @@
 ---
-const { frontmatter, Content } = Astro.props;
+const { frontmatter, Content, content } = Astro.props;
 ---
 <html lang="zh">
   <head>
@@ -71,7 +71,7 @@ const { frontmatter, Content } = Astro.props;
     <article style="max-width: 800px; margin: 0 auto; padding: 2rem;">
       <h1>{frontmatter.title}</h1>
       <p style="color:#888;">{frontmatter.date}</p>
-      <Content />
+      {Content ? <Content /> : <Fragment set:html={content} />}
     </article>
   </body>
 </html> 
