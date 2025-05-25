@@ -4,33 +4,54 @@ import BlogLayout from '../../layouts/BlogLayout.astro';
 // Get all markdown files in the blog directory
 const posts = await Astro.glob('./*.md');
 ---
-<BlogLayout title="Blog">
-  <ul class="post-list">
-    {posts.map(post => (
-      <li class="post-item">
-        <a href={post.url}>
-          <h2>{post.frontmatter.title}</h2>
+<BlogLayout title="文章">
+  <section>
+    <h2 style="margin-bottom:0.2em;">文章</h2>
+    <p style="color:#666;margin-top:0;">我会写关于我感兴趣方向的文章</p>
+    <div class="posts-grid">
+      {posts.map(post => (
+        <a href={post.url} class="post-card">
+          {post.frontmatter.cover && <img src={post.frontmatter.cover} alt={post.frontmatter.title} />}
+          <h3>{post.frontmatter.title}</h3>
+          <p>{post.frontmatter.description}</p>
         </a>
-        <p>{post.frontmatter.description}</p>
-        <div class="post-meta">
-          {post.frontmatter.date && (
-            <time datetime={post.frontmatter.date}>
-              {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </time>
-          )}
-        </div>
-        {post.frontmatter.tags && (
-          <div class="post-tags">
-            {post.frontmatter.tags.map((tag: string) => (
-              <span class="post-tag">{tag}</span>
-            ))}
-          </div>
-        )}
-      </li>
-    ))}
-  </ul>
+      ))}
+    </div>
+  </section>
+  <style>
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .post-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .post-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    }
+    .post-card img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+    .post-card h3 {
+      margin: 1rem 1rem 0.5rem 1rem;
+      font-size: 1.2rem;
+    }
+    .post-card p {
+      margin: 0 1rem 1rem 1rem;
+      color: #666;
+      font-size: 1rem;
+    }
+  </style>
 </BlogLayout> 
