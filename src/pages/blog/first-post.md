@@ -3,6 +3,7 @@ title: "My First Blog Post"
 date: 2024-06-10
 description: "Welcome to my new Astro blog! This is my first post."
 tags: ["blog", "astro", "web"]
+layout: ../../layouts/PostLayout.astro
 ---
 
 # My First Blog Post

@@ -1,0 +1,16 @@
+---
+const { frontmatter, Content } = Astro.props;
+---
+<html lang="zh">
+  <head>
+    <title>{frontmatter.title} | Eternaux</title>
+    <meta name="description" content={frontmatter.description} />
+  </head>
+  <body>
+    <article style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+      <h1>{frontmatter.title}</h1>
+      <p style="color:#888;">{frontmatter.date}</p>
+      <Content />
+    </article>
+  </body>
+</html> 
