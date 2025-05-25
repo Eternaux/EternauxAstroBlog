@@ -1,5 +1,6 @@
 ---
 import BlogLayout from '../../layouts/BlogLayout.astro';
+import BlogSPA from '../../components/BlogSPA.jsx';
 
 // Get all markdown files in the blog directory
 const posts = await Astro.glob('./*.md');
@@ -8,15 +9,7 @@ const posts = await Astro.glob('./*.md');
   <section>
     <h2 style="margin-bottom:0.2em;">文章</h2>
     <p style="color:#666;margin-top:0;">我会写关于我感兴趣方向的文章</p>
-    <div class="posts-grid">
-      {posts.map(post => (
-        <a href={post.url} class="post-card">
-          {post.frontmatter.cover && <img src={post.frontmatter.cover} alt={post.frontmatter.title} />}
-          <h3>{post.frontmatter.title}</h3>
-          <p>{post.frontmatter.description}</p>
-        </a>
-      ))}
-    </div>
+    <BlogSPA client:load />
   </section>
   <style>
     .posts-grid {
