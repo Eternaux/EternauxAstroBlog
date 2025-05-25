@@ -3,5 +3,5 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import AppRouter from '../components/AppRouter.jsx';
 ---
 <BaseLayout title="Eternaux">
-  <AppRouter client:load />
+  <AppRouter client:only="react" />
 </BaseLayout>
